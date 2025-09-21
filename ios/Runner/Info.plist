@@ -47,5 +47,18 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
+		<key>UIUserNotificationSettings</key>
+		<dict>
+			<key>UIUserNotificationTypesAlert</key>
+			<true/>
+			<key>UIUserNotificationTypesBadge</key>
+			<true/>
+			<key>UIUserNotificationTypesSound</key>
+			<true/>
+		</dict>
 	</dict>
 </plist>

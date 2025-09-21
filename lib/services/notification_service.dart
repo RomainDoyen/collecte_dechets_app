@@ -15,7 +15,7 @@ class NotificationService {
 
     // Configuration Android
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification_recycling');
 
     // Configuration iOS
     const DarwinInitializationSettings initializationSettingsIOS =
@@ -23,6 +23,9 @@ class NotificationService {
           requestAlertPermission: true,
           requestBadgePermission: true,
           requestSoundPermission: true,
+          defaultPresentAlert: true,
+          defaultPresentBadge: true,
+          defaultPresentSound: true,
         );
 
     // Configuration globale
@@ -94,7 +97,7 @@ class NotificationService {
           channelDescription: 'Notifications pour les collectes de déchets',
           importance: Importance.high,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          icon: 'ic_notification_recycling',
           color: _getColorForCollectionType(event.type),
         ),
         iOS: DarwinNotificationDetails(
@@ -102,6 +105,7 @@ class NotificationService {
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
+          attachments: [DarwinNotificationAttachment('NotificationIcon.png')],
         ),
       ),
       payload: 'collection_${event.hashCode}',
@@ -177,13 +181,14 @@ class NotificationService {
           channelDescription: 'Notifications pour les collectes de déchets',
           importance: Importance.high,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          icon: 'ic_notification_recycling',
         ),
         iOS: DarwinNotificationDetails(
           sound: 'default',
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
+          attachments: [DarwinNotificationAttachment('NotificationIcon.png')],
         ),
       ),
     );
