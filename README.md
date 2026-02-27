@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="documentation/assets/logo-notiwaste-master.png" alt="NotiWaste" width="180" style="background:white; border-radius:20px; padding:12px;" />
+</p>
+
 # NotiWaste
 
 Application mobile Flutter de gestion des collectes de déchets pour la commune de Sainte-Rose (La Réunion).
