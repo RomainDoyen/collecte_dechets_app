@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'calendar_screen.dart';
-import '../services/collection_service.dart';
-import '../services/notification_service.dart';
+import 'home_screen.dart';
+import '../services/notifications.dart';
+import '../services/fcm_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -51,8 +51,8 @@ class _SplashScreenState extends State<SplashScreen>
     // Initialiser les services
     await _initializeServices();
 
-    // Attendre que l'animation soit terminée (minimum 2 secondes)
-    await Future.delayed(const Duration(milliseconds: 2500));
+    // Attendre que l'animation soit terminée (minimum 1 seconde)
+    await Future.delayed(const Duration(milliseconds: 1500));
 
     // Naviguer vers l'écran principal
     if (mounted) {
@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
         PageRouteBuilder(
           pageBuilder:
               (context, animation, secondaryAnimation) =>
-                  const CalendarScreen(),
+                  const HomeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -72,15 +72,14 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initializeServices() async {
     try {
-      // Initialiser les données depuis le fichier JSON
-      await CollectionService.initializeData();
+      await Notifications.init();
+      await Notifications.scheduleAll();
 
-      // Initialiser les notifications
-      await NotificationService.initialize();
-
-      // Services initialisés avec succès
+      try {
+        await FCMService.initialize();
+      } catch (_) {}
     } catch (e) {
-      // Erreur lors de l'initialisation
+      print('Erreur init: $e');
     }
   }
 
@@ -135,7 +134,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       child: ClipOval(
                         child: Image.asset(
-                          'assets/icon/recycling-bin.png',
+                          'assets/icon/logo_notiwaste.png',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             // Fallback si l'image n'existe pas
@@ -164,7 +163,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Column(
                     children: [
                       const Text(
-                        '🗑️ Collecte Sainte-Rose',
+                        'NotiWaste',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,

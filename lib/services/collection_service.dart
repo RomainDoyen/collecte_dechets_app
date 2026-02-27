@@ -1,49 +1,34 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/collection_type.dart';
 
 class CollectionService {
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static const String _collectionName = 'collections';
   static List<CollectionEvent>? _cachedCollections;
 
-  // Charger les données depuis le fichier JSON
-  static Future<List<CollectionEvent>> _loadCollectionsFromJson() async {
+  static void clearCache() {
+    _cachedCollections = null;
+  }
+
+  static Future<List<CollectionEvent>> getAllCollections() async {
     if (_cachedCollections != null) {
       return _cachedCollections!;
     }
 
     try {
-      final String jsonString = await rootBundle.loadString(
-        'assets/collections_data.json',
-      );
-      final List<dynamic> jsonList = json.decode(jsonString);
+      final snapshot = await _firestore.collection(_collectionName).get();
 
-      _cachedCollections =
-          jsonList
-              .map(
-                (json) => CollectionEvent.fromMap(json as Map<String, dynamic>),
-              )
-              .toList();
+      _cachedCollections = snapshot.docs
+          .map((doc) => CollectionEvent.fromMap(doc.data()))
+          .toList();
 
       return _cachedCollections!;
     } catch (e) {
-      // En cas d'erreur, retourner une liste vide
+      print('Erreur chargement Firestore: $e');
       return [];
     }
   }
 
-  // Initialiser les données (plus nécessaire avec JSON local)
-  static Future<void> initializeData() async {
-    // Les données sont maintenant chargées depuis le fichier JSON
-    // Cette méthode est conservée pour la compatibilité mais ne fait rien
-    await _loadCollectionsFromJson();
-  }
-
-  // Récupérer toutes les collectes
-  static Future<List<CollectionEvent>> getAllCollections() async {
-    return await _loadCollectionsFromJson();
-  }
-
-  // Récupérer les collectes pour un mois donné
   static Future<List<CollectionEvent>> getCollectionsForMonth(
     DateTime month,
   ) async {
@@ -56,7 +41,6 @@ class CollectionService {
         .toList();
   }
 
-  // Récupérer la prochaine collecte
   static Future<CollectionEvent?> getNextCollection() async {
     final allCollections = await getAllCollections();
     final now = DateTime.now();
@@ -70,7 +54,6 @@ class CollectionService {
     return upcomingCollections.first;
   }
 
-  // Récupérer les collectes du jour
   static Future<List<CollectionEvent>> getCollectionsForToday() async {
     final allCollections = await getAllCollections();
     final today = DateTime.now();

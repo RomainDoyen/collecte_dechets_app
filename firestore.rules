@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Collection des collectes de déchets
+    // Lecture publique autorisée pour tous (données publiques du calendrier)
+    // Écriture restreinte pour éviter les modifications non autorisées
+    match /collections/{documentId} {
+      // Lecture publique - les dates de collecte sont des informations publiques
+      allow read: if true;
+      
+      // Écriture uniquement pour l'initialisation (peut être restreinte davantage si nécessaire)
+      // Pour l'instant, on permet l'écriture mais vous pouvez la restreindre davantage
+      // Option 1: Permettre l'écriture (pour l'initialisation depuis l'app)
+      allow write: if true;
+      
+      // Option 2: Si vous voulez restreindre l'écriture, décommentez cette ligne et commentez la précédente
+      // allow write: if false; // Désactiver l'écriture depuis l'app, utiliser uniquement la console Firebase
+    }
+    
+    // Toutes les autres collections sont refusées par défaut
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

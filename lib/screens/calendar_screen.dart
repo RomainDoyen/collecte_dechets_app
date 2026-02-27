@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../models/collection_type.dart';
 import '../services/collection_service.dart';
-import '../services/notification_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -27,12 +26,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future<void> _loadEvents() async {
     final events = await CollectionService.getAllCollections();
+    print('📅 ${events.length} événements chargés pour le calendrier');
+    if (events.isNotEmpty) {
+      print('📅 Premier événement: ${events.first.date} - ${events.first.type.name}');
+      print('📅 Dernier événement: ${events.last.date} - ${events.last.type.name}');
+    }
     setState(() {
       _events = events;
     });
-
-    // Programmer les notifications pour les prochaines collectes
-    await NotificationService.scheduleAllNotifications(events);
   }
 
   Future<void> _loadNextCollection() async {
@@ -42,26 +43,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
   }
 
-  // Tester les notifications
-  Future<void> _testNotification() async {
-    await NotificationService.showTestNotification();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Notification de test envoyée !'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
   List<CollectionEvent> _getEventsForDay(DateTime day) {
-    return _events
-        .where(
-          (event) =>
-              event.date.year == day.year &&
-              event.date.month == day.month &&
-              event.date.day == day.day,
-        )
+    // Normaliser les dates pour la comparaison (ignorer l'heure)
+    final normalizedDay = DateTime(day.year, day.month, day.day);
+    final eventsForDay = _events
+        .where((event) {
+          // Normaliser la date de l'événement (convertir UTC en local si nécessaire)
+          final eventDate = DateTime(event.date.year, event.date.month, event.date.day);
+          return eventDate.year == normalizedDay.year &&
+              eventDate.month == normalizedDay.month &&
+              eventDate.day == normalizedDay.day;
+        })
         .toList();
+    
+    if (eventsForDay.isNotEmpty) {
+      print('📅 ${eventsForDay.length} événement(s) trouvé(s) pour ${day.day}/${day.month}/${day.year}');
+    }
+    
+    return eventsForDay;
   }
 
   Color _getColorForCollectionType(CollectionType type) {
@@ -83,20 +82,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🗑️ Collecte Sainte-Rose'),
+        title: const Text('NotiWaste'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_active),
-            onPressed: _testNotification,
-            tooltip: 'Tester les notifications',
-          ),
-        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Prochaine collecte
+      body: ListView(
+        padding: const EdgeInsets.only(bottom: 32),
+        children: [
+              // Prochaine collecte
             if (_nextCollection != null)
               Container(
                 width: double.infinity,
@@ -375,8 +367,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ],
                 ),
               ),
-          ],
-        ),
+        ],
       ),
     );
   }
