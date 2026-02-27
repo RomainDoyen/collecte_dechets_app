@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Architecture — NotiWaste</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div class="sidebar-overlay" aria-hidden="true"></div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Ouvrir le menu">&#9776;</button>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Navigation">
+        <div class="brand">
+          <div class="brand-icon"><img src="../assets/logo_notiwaste.png" alt="NotiWaste" class="brand-logo" /></div>
+          <div>
+            <p class="brand-title">NotiWaste</p>
+            <p class="brand-subtitle">Documentation technique</p>
+          </div>
+        </div>
+        <div class="sidebar-search">
+          <div class="search-wrapper">
+            <span class="search-icon">&#128269;</span>
+            <input type="search" autocomplete="off" spellcheck="false" placeholder="Rechercher…" data-action="nav-search" />
+          </div>
+        </div>
+        <nav>
+          <ul class="nav">
+            <li data-nav-section class="nav-section">Vue d'ensemble</li>
+            <li data-nav-item><a href="../index.html"><span class="nav-icon">&#127968;</span><span class="nav-label">Accueil<small>Présentation du projet</small></span></a></li>
+            <li data-nav-item><a href="../architecture/overview.html" aria-current="page"><span class="nav-icon">&#128736;</span><span class="nav-label">Architecture<small>Vue technique globale</small></span></a></li>
+            <li data-nav-section class="nav-section">Application</li>
+            <li data-nav-item><a href="../features/overview.html"><span class="nav-icon">&#9733;</span><span class="nav-label">Fonctionnalités<small>Modules &amp; capacités</small></span></a></li>
+            <li data-nav-item><a href="../guide/installation.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Installation<small>Setup &amp; déploiement</small></span></a></li>
+          </ul>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="version-badge">v1.0</span>
+          <span>Mise à jour : 2026-02-27</span>
+        </div>
+      </aside>
+
+      <main class="content" id="contenu" tabindex="-1">
+        <div class="container">
+          <div class="breadcrumb">
+            <a href="../index.html">Accueil</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Architecture</span>
+          </div>
+
+          <h1>Architecture technique</h1>
+          <p>
+            NotiWaste suit une architecture <strong>mobile-first</strong> avec Flutter en frontend
+            et Firebase comme backend cloud. Les données sont stockées dans Firestore et les notifications
+            utilisent un système triple couche pour garantir la fiabilité.
+          </p>
+
+          <div class="section-card">
+            <h2 class="mt-0">Flux global</h2>
+            <div class="archi-flow">
+              <div class="archi-block archi-blue">
+                <div class="archi-block-label">&#128241; Application Flutter</div>
+                <div class="archi-block-desc">Dart · Material 3</div>
+                <div class="archi-block-desc">Android / iOS</div>
+              </div>
+              <div class="archi-arrow">&#8596;</div>
+              <div class="archi-block archi-green">
+                <div class="archi-block-label">&#9729; Firebase</div>
+                <div class="archi-block-desc">Firestore · FCM</div>
+                <div class="archi-block-desc">Cloud Google</div>
+              </div>
+              <div class="archi-arrow">&#8594;</div>
+              <div class="archi-block archi-amber">
+                <div class="archi-block-label">&#128276; Notifications</div>
+                <div class="archi-block-desc">Local · WorkManager</div>
+                <div class="archi-block-desc">AlarmManager · FCM</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Couche Application — Flutter</h2>
+            <p>L'application utilise une architecture en <strong>services</strong> avec séparation des écrans, modèles et logique métier.</p>
+
+            <h3>Organisation des couches</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr><th>Couche</th><th>Dossier</th><th>Rôle</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Screens</strong></td>
+                    <td><code>lib/screens/</code></td>
+                    <td>Interface utilisateur (7 écrans : splash, home, calendrier, admin, éditeur, guide, à propos)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Services</strong></td>
+                    <td><code>lib/services/</code></td>
+                    <td>Logique métier : données Firestore, notifications, FCM</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Models</strong></td>
+                    <td><code>lib/models/</code></td>
+                    <td>Modèles de données (CollectionEvent, CollectionType)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Couche Données — Firestore</h2>
+            <p>Les données sont stockées dans une collection unique <code>collections</code> dans Firestore.</p>
+
+            <h3>Structure d'un document</h3>
+<pre><code>{
+  "date": "2026-03-02T00:00:00.000Z",   // Date ISO 8601
+  "type": "Poubelle jaune",              // Type de collecte
+  "notes": null,                          // Notes optionnelles
+  "isHoliday": false,                     // Jour férié
+  "isCatchUp": false                      // Rattrapage
+}</code></pre>
+
+            <h3>Types de collecte</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr><th>Type</th><th>Couleur</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Poubelle grise</td><td>Gris</td><td>Ordures ménagères</td></tr>
+                  <tr><td>Poubelle jaune</td><td>Jaune</td><td>Collecte sélective (tri)</td></tr>
+                  <tr><td>Déchets Verts</td><td>Vert</td><td>Végétaux, tontes, branches</td></tr>
+                  <tr><td>Encombrants</td><td>Rouge</td><td>Meubles, appareils volumineux</td></tr>
+                  <tr><td>Déchets Métalliques</td><td>Bleu</td><td>Ferraille, métaux</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Système de notifications — Triple sécurité</h2>
+            <p>Pour garantir la réception des notifications même sur les appareils restrictifs (Xiaomi, Redmi), un système à <strong>trois couches</strong> est en place :</p>
+
+            <div class="callout callout-info">
+              <span class="callout-icon">&#128276;</span>
+              <div class="callout-body">
+                <div class="callout-title">Couche 1 — Flutter Local Notifications</div>
+                <p>Programmation via <code>zonedSchedule</code> avec le fuseau horaire Indian/Reunion. Fiable quand l'application tourne en arrière-plan.</p>
+              </div>
+            </div>
+
+            <div class="callout callout-warning">
+              <span class="callout-icon">&#9200;</span>
+              <div class="callout-body">
+                <div class="callout-title">Couche 2 — Android Alarm Manager</div>
+                <p>Alarmes exactes natives via <code>AndroidAlarmManager.oneShot</code> avec <code>exact: true</code>, <code>wakeup: true</code>, <code>alarmClock: true</code>. Survit au redémarrage du téléphone.</p>
+              </div>
+            </div>
+
+            <div class="callout callout-success">
+              <span class="callout-icon">&#9881;</span>
+              <div class="callout-body">
+                <div class="callout-title">Couche 3 — WorkManager</div>
+                <p>Tâches one-off par notification + vérification périodique toutes les 15 minutes. Dernier filet de sécurité si les deux autres couches échouent.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Navigation</h2>
+            <p>L'application utilise une <code>NavigationBar</code> (Material 3) avec 4 onglets :</p>
+            <ul>
+              <li><strong>Calendrier</strong> — Vue principale avec le calendrier des collectes</li>
+              <li><strong>Gestion</strong> — Éditeur de collectes par mois</li>
+              <li><strong>Guide</strong> — Mode d'emploi de l'application</li>
+              <li><strong>À propos</strong> — Informations sur l'application</li>
+            </ul>
+          </div>
+
+          <div class="page-footer">
+            <a href="../index.html">&#8592; Accueil</a>
+            <a href="../features/overview.html">Suivant : Fonctionnalités &#8594;</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

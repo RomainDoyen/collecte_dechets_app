@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Documentation technique — NotiWaste, application Flutter de gestion des collectes de déchets." />
+    <title>Documentation — NotiWaste</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div class="sidebar-overlay" aria-hidden="true"></div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Ouvrir le menu">&#9776;</button>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Navigation de la documentation">
+        <div class="brand">
+          <div class="brand-icon"><img src="./assets/logo_notiwaste.png" alt="NotiWaste" class="brand-logo" /></div>
+          <div>
+            <p class="brand-title">NotiWaste</p>
+            <p class="brand-subtitle">Documentation technique</p>
+          </div>
+        </div>
+
+        <div class="sidebar-search">
+          <div class="search-wrapper">
+            <span class="search-icon">&#128269;</span>
+            <input type="search" autocomplete="off" spellcheck="false" placeholder="Rechercher…" data-action="nav-search" />
+          </div>
+        </div>
+
+        <nav>
+          <ul class="nav">
+            <li data-nav-section class="nav-section">Vue d'ensemble</li>
+            <li data-nav-item>
+              <a href="./index.html" aria-current="page">
+                <span class="nav-icon">&#127968;</span>
+                <span class="nav-label">Accueil<small>Présentation du projet</small></span>
+              </a>
+            </li>
+            <li data-nav-item>
+              <a href="./architecture/overview.html">
+                <span class="nav-icon">&#128736;</span>
+                <span class="nav-label">Architecture<small>Vue technique globale</small></span>
+              </a>
+            </li>
+
+            <li data-nav-section class="nav-section">Application</li>
+            <li data-nav-item>
+              <a href="./features/overview.html">
+                <span class="nav-icon">&#9733;</span>
+                <span class="nav-label">Fonctionnalités<small>Modules &amp; capacités</small></span>
+              </a>
+            </li>
+            <li data-nav-item>
+              <a href="./guide/installation.html">
+                <span class="nav-icon">&#128640;</span>
+                <span class="nav-label">Installation<small>Setup &amp; déploiement</small></span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <span class="version-badge">v1.0</span>
+          <span>Mise à jour : 2026-02-27</span>
+        </div>
+      </aside>
+
+      <main class="content" id="contenu" tabindex="-1">
+        <div class="container">
+
+          <div class="hero">
+            <div class="hero-content hero-with-logo">
+              <div class="hero-text">
+                <div class="meta">
+                  <span class="tag tag-hero">Flutter</span>
+                  <span class="tag tag-hero">Firebase</span>
+                  <span class="tag tag-hero">Firestore</span>
+                  <span class="tag tag-hero">FCM</span>
+                </div>
+                <h1>NotiWaste</h1>
+                <p>
+                  Application mobile de gestion des collectes de déchets.
+                  Calendrier interactif, notifications automatiques et gestion des dates directement depuis l'application.
+                </p>
+              </div>
+              <div class="hero-logo">
+                <img src="./assets/logo-notiwaste-master.png" alt="NotiWaste Logo" />
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat">
+              <div class="stat-value stat-value-green">4</div>
+              <div class="stat-label">Écrans</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value stat-value-teal">5</div>
+              <div class="stat-label">Types de collecte</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value stat-value-amber">3</div>
+              <div class="stat-label">Systèmes de notif.</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value stat-value-purple">1</div>
+              <div class="stat-label">Base Firestore</div>
+            </div>
+          </div>
+
+          <h2 class="mt-0">Explorer la documentation</h2>
+
+          <div class="grid grid-3">
+            <a href="./architecture/overview.html" class="card card-hover card-link">
+              <div class="card-icon card-icon-blue">&#128736;</div>
+              <h3 class="mt-0 mb-sm">Architecture</h3>
+              <p class="text-muted text-sm mb-0">Vue technique : Flutter, Firebase Firestore, notifications multi-couches et flux de données.</p>
+            </a>
+            <a href="./features/overview.html" class="card card-hover card-link">
+              <div class="card-icon card-icon-green">&#9733;</div>
+              <h3 class="mt-0 mb-sm">Fonctionnalités</h3>
+              <p class="text-muted text-sm mb-0">Calendrier, gestion des collectes, notifications, guide intégré et page à propos.</p>
+            </a>
+            <a href="./guide/installation.html" class="card card-hover card-link">
+              <div class="card-icon card-icon-purple">&#128640;</div>
+              <h3 class="mt-0 mb-sm">Installation</h3>
+              <p class="text-muted text-sm mb-0">Guide pas-à-pas : prérequis, configuration Firebase, démarrage et compilation.</p>
+            </a>
+          </div>
+          <br>
+          <div class="section-card">
+            <h2 class="mt-0">Technologies utilisées</h2>
+            <div class="grid grid-2">
+              <div>
+                <h3>Application mobile</h3>
+                <div class="meta" style="margin-top:8px">
+                  <span class="tag tag-blue">Flutter</span>
+                  <span class="tag tag-teal">Dart</span>
+                  <span class="tag tag-green">Material 3</span>
+                </div>
+                <ul>
+                  <li><strong>Flutter</strong> — Framework multiplateforme (Android / iOS)</li>
+                  <li><strong>Dart</strong> — Langage typé et performant</li>
+                  <li><strong>Material 3</strong> — Design system moderne</li>
+                  <li><strong>Table Calendar</strong> — Calendrier interactif</li>
+                  <li><strong>WorkManager</strong> — Tâches en arrière-plan</li>
+                  <li><strong>Android Alarm Manager</strong> — Alarmes exactes natives</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Backend &amp; Services</h3>
+                <div class="meta" style="margin-top:8px">
+                  <span class="tag tag-amber">Firebase</span>
+                  <span class="tag tag-red">Firestore</span>
+                  <span class="tag tag-purple">FCM</span>
+                </div>
+                <ul>
+                  <li><strong>Firebase Firestore</strong> — Base de données cloud NoSQL</li>
+                  <li><strong>Firebase Cloud Messaging</strong> — Notifications push</li>
+                  <li><strong>Flutter Local Notifications</strong> — Notifications locales programmées</li>
+                  <li><strong>SharedPreferences</strong> — Stockage local de données</li>
+                  <li><strong>Timezone</strong> — Gestion des fuseaux horaires (Indian/Reunion)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Structure du projet</h2>
+<pre><code>app-notiwaste/
+├── lib/
+│   ├── main.dart                    # Point d'entrée
+│   ├── firebase_options.dart        # Configuration Firebase
+│   ├── models/
+│   │   └── collection_type.dart     # Modèle CollectionEvent + types
+│   ├── services/
+│   │   ├── collection_service.dart  # Chargement des données Firestore
+│   │   ├── notifications.dart       # Système de notifications complet
+│   │   ├── fcm_service.dart         # Firebase Cloud Messaging
+│   │   └── firestore_initializer.dart
+│   └── screens/
+│       ├── splash_screen.dart       # Écran de démarrage animé
+│       ├── home_screen.dart         # Navigation (BottomNavigationBar)
+│       ├── calendar_screen.dart     # Calendrier des collectes
+│       ├── admin_screen.dart        # Gestion (grille des 12 mois)
+│       ├── month_editor_screen.dart # Éditeur de mois (sélection multiple)
+│       ├── guide_screen.dart        # Guide d'utilisation
+│       └── about_screen.dart        # À propos
+├── assets/
+│   └── icon/
+│       └── logo_notiwaste.png       # Logo de l'application
+├── android/                         # Configuration Android native
+├── ios/                             # Configuration iOS native
+└── documentation/                   # Cette documentation</code></pre>
+          </div>
+
+          <div class="page-footer">
+            <span>NotiWaste — Documentation technique</span>
+            <a href="./architecture/overview.html">Suivant : Architecture &#8594;</a>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <script src="./assets/app.js" defer></script>
+  </body>
+</html>

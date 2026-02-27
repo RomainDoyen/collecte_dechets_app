@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Installation — NotiWaste</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div class="sidebar-overlay" aria-hidden="true"></div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Ouvrir le menu">&#9776;</button>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Navigation">
+        <div class="brand">
+          <div class="brand-icon"><img src="../assets/logo_notiwaste.png" alt="NotiWaste" class="brand-logo" /></div>
+          <div>
+            <p class="brand-title">NotiWaste</p>
+            <p class="brand-subtitle">Documentation technique</p>
+          </div>
+        </div>
+        <div class="sidebar-search">
+          <div class="search-wrapper">
+            <span class="search-icon">&#128269;</span>
+            <input type="search" autocomplete="off" spellcheck="false" placeholder="Rechercher…" data-action="nav-search" />
+          </div>
+        </div>
+        <nav>
+          <ul class="nav">
+            <li data-nav-section class="nav-section">Vue d'ensemble</li>
+            <li data-nav-item><a href="../index.html"><span class="nav-icon">&#127968;</span><span class="nav-label">Accueil<small>Présentation du projet</small></span></a></li>
+            <li data-nav-item><a href="../architecture/overview.html"><span class="nav-icon">&#128736;</span><span class="nav-label">Architecture<small>Vue technique globale</small></span></a></li>
+            <li data-nav-section class="nav-section">Application</li>
+            <li data-nav-item><a href="../features/overview.html"><span class="nav-icon">&#9733;</span><span class="nav-label">Fonctionnalités<small>Modules &amp; capacités</small></span></a></li>
+            <li data-nav-item><a href="../guide/installation.html" aria-current="page"><span class="nav-icon">&#128640;</span><span class="nav-label">Installation<small>Setup &amp; déploiement</small></span></a></li>
+          </ul>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="version-badge">v1.0</span>
+          <span>Mise à jour : 2026-02-27</span>
+        </div>
+      </aside>
+
+      <main class="content" id="contenu" tabindex="-1">
+        <div class="container">
+          <div class="breadcrumb">
+            <a href="../index.html">Accueil</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Installation</span>
+          </div>
+
+          <h1>Installation &amp; Déploiement</h1>
+          <p>Guide complet pour installer, configurer et compiler l'application NotiWaste.</p>
+
+          <div class="section-card">
+            <h2 class="mt-0">Prérequis</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr><th>Outil</th><th>Version minimum</th><th>Utilisation</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Flutter SDK</strong></td><td>3.7.2+</td><td>Framework de développement</td></tr>
+                  <tr><td><strong>Dart SDK</strong></td><td>3.7.2+</td><td>Inclus avec Flutter</td></tr>
+                  <tr><td><strong>Android Studio</strong></td><td>2024+</td><td>SDK Android, émulateur</td></tr>
+                  <tr><td><strong>Xcode</strong> (macOS)</td><td>15+</td><td>Compilation iOS (optionnel)</td></tr>
+                  <tr><td><strong>Compte Firebase</strong></td><td>—</td><td>Backend cloud (gratuit)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Installation pas-à-pas</h2>
+            <ol class="steps">
+              <li>
+                <div class="step-title">Cloner le projet</div>
+<pre><code>git clone https://github.com/votre-repo/collecte_dechets_app.git
+cd app-notiwaste</code></pre>
+              </li>
+              <li>
+                <div class="step-title">Installer les dépendances</div>
+<pre><code>flutter pub get</code></pre>
+              </li>
+              <li>
+                <div class="step-title">Configurer Firebase</div>
+                <p>Créez un projet sur <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a>, puis :</p>
+                <ul>
+                  <li>Activez <strong>Firestore Database</strong></li>
+                  <li>Activez <strong>Cloud Messaging</strong></li>
+                  <li>Ajoutez une app <strong>Android</strong> et téléchargez <code>google-services.json</code></li>
+                  <li>Placez le fichier dans <code>android/app/</code></li>
+                  <li>Mettez à jour <code>lib/firebase_options.dart</code> avec vos clés</li>
+                </ul>
+              </li>
+              <li>
+                <div class="step-title">Générer les icônes</div>
+<pre><code>dart run flutter_launcher_icons
+dart run flutter_native_splash:create</code></pre>
+              </li>
+              <li>
+                <div class="step-title">Lancer l'application</div>
+<pre><code># En mode debug
+flutter run
+
+# En mode release (optimisé)
+flutter run --release</code></pre>
+              </li>
+            </ol>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Compilation (APK / App Bundle)</h2>
+            <h3>APK (installation directe)</h3>
+<pre><code>flutter build apk --release</code></pre>
+            <p>Le fichier sera généré dans <code>build/app/outputs/flutter-apk/app-release.apk</code></p>
+
+            <h3>App Bundle (Google Play Store)</h3>
+<pre><code>flutter build appbundle --release</code></pre>
+            <p>Le fichier sera généré dans <code>build/app/outputs/bundle/release/app-release.aab</code></p>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Configuration Firestore</h2>
+            <p>Les règles de sécurité Firestore recommandées :</p>
+<pre><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /collections/{documentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}</code></pre>
+
+            <div class="callout callout-warning">
+              <span class="callout-icon">&#9888;</span>
+              <div class="callout-body">
+                <div class="callout-title">Sécurité</div>
+                <p>En production, restreignez l'écriture aux utilisateurs authentifiés ou à des rôles spécifiques. La règle <code>allow write: if true</code> est adaptée pour un usage personnel.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Dépendances principales</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr><th>Package</th><th>Version</th><th>Usage</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>firebase_core</code></td><td>^3.15.2</td><td>Initialisation Firebase</td></tr>
+                  <tr><td><code>cloud_firestore</code></td><td>^5.6.10</td><td>Base de données Firestore</td></tr>
+                  <tr><td><code>firebase_messaging</code></td><td>^15.1.3</td><td>Notifications push FCM</td></tr>
+                  <tr><td><code>flutter_local_notifications</code></td><td>^18.0.1</td><td>Notifications locales programmées</td></tr>
+                  <tr><td><code>table_calendar</code></td><td>^3.2.0</td><td>Widget calendrier interactif</td></tr>
+                  <tr><td><code>workmanager</code></td><td>^0.9.0+3</td><td>Tâches en arrière-plan</td></tr>
+                  <tr><td><code>android_alarm_manager_plus</code></td><td>^5.0.0</td><td>Alarmes exactes natives</td></tr>
+                  <tr><td><code>timezone</code></td><td>^0.9.4</td><td>Fuseaux horaires (Indian/Reunion)</td></tr>
+                  <tr><td><code>shared_preferences</code></td><td>^2.2.2</td><td>Stockage local clé-valeur</td></tr>
+                  <tr><td><code>disable_battery_optimization</code></td><td>^1.1.1</td><td>Désactivation optimisation batterie</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="page-footer">
+            <a href="../features/overview.html">&#8592; Fonctionnalités</a>
+            <span>NotiWaste — Documentation technique</span>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

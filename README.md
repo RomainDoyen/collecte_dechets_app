@@ -1,129 +1,88 @@
-# Application Consultation Collecte de Déchets - Sainte Rose
+# NotiWaste
 
-Cette application Flutter permet de consulter le calendrier de collecte des déchets pour la zone SAINTE-ROSE SR01 avec des notifications push fiables via Firebase Cloud Messaging.
+Application mobile Flutter de gestion des collectes de déchets pour la commune de Sainte-Rose (La Réunion).
 
 ## Fonctionnalités
 
-- 📅 **Calendrier interactif** avec affichage des collectes
-- 🔔 **Prochaine collecte** mise en évidence
-- 🎨 **Légende colorée** selon les types de déchets
-- 📱 **Interface responsive** et moderne
-- 🔔 **Notifications push** via Firebase Cloud Messaging (FCM)
-- ☁️ **Synchronisation Firestore** pour les données
-- 🔄 **Notifications automatiques** programmées via cron
+- **Calendrier interactif** — Affichage mensuel avec pastilles colorées par type de collecte
+- **Notifications automatiques** — Rappel la veille de chaque collecte (triple sécurité : zonedSchedule + AlarmManager + WorkManager)
+- **Gestion des collectes** — Ajout/suppression de dates directement depuis l'app avec sauvegarde Firestore
+- **Guide intégré** — Mode d'emploi accessible depuis l'application
+- **Synchronisation cloud** — Données stockées dans Firebase Firestore
 
 ## Types de collectes
 
-- 🗑️ **Ordures Ménagères** (Gris) - Mardi
-- ♻️ **Collecte Sélective** (Jaune) - 1 lundi sur 2
-- 🍃 **Déchets Verts** (Vert) - 1 collecte par mois
-- 🛋️ **Encombrants** (Rouge) - 1 collecte tous les 2 mois
-- 🚲 **Déchets Métalliques** (Bleu) - Sur rendez-vous uniquement
 
-## Configuration Firebase
+| Couleur | Type                | Description                   |
+| ------- | ------------------- | ----------------------------- |
+| Gris    | Poubelle grise      | Ordures ménagères             |
+| Jaune   | Poubelle jaune      | Collecte sélective (tri)      |
+| Vert    | Déchets Verts       | Végétaux, tontes, branches    |
+| Rouge   | Encombrants         | Meubles, appareils volumineux |
+| Bleu    | Déchets Métalliques | Ferraille, métaux             |
 
-### 1. Créer un projet Firebase
-1. Aller sur [Firebase Console](https://console.firebase.google.com/)
-2. Créer un nouveau projet
-3. Activer Firestore Database
-4. Activer Cloud Messaging
-
-### 2. Configuration Android
-1. Ajouter une app Android dans Firebase
-2. Télécharger `google-services.json`
-3. Placer le fichier dans `android/app/`
-4. Mettre à jour `firebase_options.dart` avec vos clés
-
-### 3. Configuration iOS
-1. Ajouter une app iOS dans Firebase
-2. Télécharger `GoogleService-Info.plist`
-3. Placer le fichier dans `ios/Runner/`
-4. Mettre à jour `firebase_options.dart` avec vos clés
-
-## Données
-
-Les données de collecte sont synchronisées avec Firestore et initialisées depuis le fichier JSON local (`assets/collections_data.json`).
-
-### Avantages de Firestore :
-- 🔄 **Synchronisation** : Données à jour en temps réel
-- 🔔 **Notifications push** : Fiables même si l'app est fermée
-- ☁️ **Cloud** : Accessible depuis n'importe où
-- 📊 **Analytics** : Suivi des utilisateurs
 
 ## Installation
 
-1. Cloner le projet
-2. Configurer Firebase (voir section Configuration Firebase)
-3. Installer les dépendances : `flutter pub get`
-4. Lancer l'application : `flutter run`
+```bash
+# Cloner le projet
+git clone https://github.com/votre-repo/collecte_dechets_app.git
+cd app-notiwaste
 
-## Notifications FCM
+# Installer les dépendances
+flutter pub get
 
-### Test des notifications
-L'application inclut un bouton de test FCM (☁️) dans l'AppBar qui :
-- Programme une notification de test pour 18h55
-- Affiche le token FCM dans les logs
-- S'abonne au topic de test
+# Générer les icônes et le splash screen
+dart run flutter_launcher_icons
+dart run flutter_native_splash:create
 
-### Configuration automatique
-Les notifications sont programmées automatiquement au démarrage de l'application pour les collectes du lendemain à 18h15.
+# Lancer l'application
+flutter run
+```
+
+## Configuration Firebase
+
+1. Créer un projet sur [Firebase Console](https://console.firebase.google.com/)
+2. Activer **Firestore Database** et **Cloud Messaging**
+3. Ajouter une app Android, télécharger `google-services.json` et le placer dans `android/app/`
+4. Mettre à jour `lib/firebase_options.dart` avec vos clés
 
 ## Structure du projet
 
 ```
 lib/
-├── main.dart                 # Point d'entrée de l'application
-├── firebase_options.dart     # Configuration Firebase
+├── main.dart                    # Point d'entrée
+├── firebase_options.dart        # Configuration Firebase
 ├── models/
-│   └── collection_type.dart  # Modèles de données
+│   └── collection_type.dart     # Modèle de données
 ├── services/
-│   ├── collection_service.dart # Service de gestion des données Firestore
-│   ├── notification_service.dart # Service de notifications locales
-│   ├── fcm_service.dart     # Service Firebase Cloud Messaging
-│   └── firestore_initializer.dart # Initialisation Firestore
+│   ├── collection_service.dart  # Chargement des données Firestore
+│   ├── notifications.dart       # Système de notifications complet
+│   ├── fcm_service.dart         # Firebase Cloud Messaging
+│   └── firestore_initializer.dart
 └── screens/
-    ├── calendar_screen.dart  # Écran principal avec calendrier
-    └── splash_screen.dart    # Écran de démarrage
-
-assets/
-├── collections_data.json     # Données de collecte (JSON - initialisation)
-└── icon/
-    └── recycling-bin.png     # Icône de l'application
-
-# Configuration Firebase
-├── firebase.json            # Configuration Firebase
-└── firebase_options.dart    # Options Firebase (à configurer)
+    ├── splash_screen.dart       # Écran de démarrage
+    ├── home_screen.dart         # Navigation principale
+    ├── calendar_screen.dart     # Calendrier des collectes
+    ├── admin_screen.dart        # Gestion (grille des 12 mois)
+    ├── month_editor_screen.dart # Éditeur de mois
+    ├── guide_screen.dart        # Guide d'utilisation
+    └── about_screen.dart        # À propos
 ```
 
-## Développement
+## Documentation
 
-### Modifier les données de collecte :
-1. Éditer le fichier `assets/collections_data.json`
-2. Redémarrer l'application (les données seront synchronisées avec Firestore)
+La documentation technique complète est disponible dans le dossier `documentation/`. Ouvrez `documentation/index.html` dans un navigateur pour y accéder.
 
-### Tester les notifications :
-1. Configurer Firebase avec vos clés
-2. Lancer l'app et cliquer sur le bouton ☁️ (FCM)
-3. Vérifier les logs pour le token FCM
-4. La notification de test apparaîtra à 18h55
+## Compilation
 
-### Format des données JSON :
-```json
-{
-  "date": "2025-07-02T00:00:00.000Z",
-  "type": "Ordures Ménagères",
-  "notes": null,
-  "isHoliday": false,
-  "isCatchUp": false
-}
+```bash
+# APK (installation directe)
+flutter build apk --release
+
+# App Bundle (Google Play Store)
+flutter build appbundle --release
 ```
-
-## Prochaines étapes
-
-1. **Configurer Firebase** avec vos vraies clés dans `firebase_options.dart`
-2. **Tester les notifications FCM** avec le bouton ☁️ dans l'app
-3. **Vérifier la collecte de test** pour demain (24/09/2025)
-4. **La notification apparaîtra** à 18h55 aujourd'hui
 
 ## Licence
 

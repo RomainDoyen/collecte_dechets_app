@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fonctionnalités — NotiWaste</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div class="sidebar-overlay" aria-hidden="true"></div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Ouvrir le menu">&#9776;</button>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Navigation">
+        <div class="brand">
+          <div class="brand-icon"><img src="../assets/logo_notiwaste.png" alt="NotiWaste" class="brand-logo" /></div>
+          <div>
+            <p class="brand-title">NotiWaste</p>
+            <p class="brand-subtitle">Documentation technique</p>
+          </div>
+        </div>
+        <div class="sidebar-search">
+          <div class="search-wrapper">
+            <span class="search-icon">&#128269;</span>
+            <input type="search" autocomplete="off" spellcheck="false" placeholder="Rechercher…" data-action="nav-search" />
+          </div>
+        </div>
+        <nav>
+          <ul class="nav">
+            <li data-nav-section class="nav-section">Vue d'ensemble</li>
+            <li data-nav-item><a href="../index.html"><span class="nav-icon">&#127968;</span><span class="nav-label">Accueil<small>Présentation du projet</small></span></a></li>
+            <li data-nav-item><a href="../architecture/overview.html"><span class="nav-icon">&#128736;</span><span class="nav-label">Architecture<small>Vue technique globale</small></span></a></li>
+            <li data-nav-section class="nav-section">Application</li>
+            <li data-nav-item><a href="../features/overview.html" aria-current="page"><span class="nav-icon">&#9733;</span><span class="nav-label">Fonctionnalités<small>Modules &amp; capacités</small></span></a></li>
+            <li data-nav-item><a href="../guide/installation.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Installation<small>Setup &amp; déploiement</small></span></a></li>
+          </ul>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="version-badge">v1.0</span>
+          <span>Mise à jour : 2026-02-27</span>
+        </div>
+      </aside>
+
+      <main class="content" id="contenu" tabindex="-1">
+        <div class="container">
+          <div class="breadcrumb">
+            <a href="../index.html">Accueil</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>Fonctionnalités</span>
+          </div>
+
+          <h1>Fonctionnalités</h1>
+          <p>Vue complète de toutes les fonctionnalités de l'application NotiWaste.</p>
+
+          <div class="feature-grid">
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Calendrier interactif</strong>
+                Affichage mensuel des collectes avec pastilles colorées par type de déchet.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Prochaine collecte</strong>
+                Carte mise en évidence montrant la prochaine collecte prévue avec date et type.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Notifications automatiques</strong>
+                Rappel la veille de chaque collecte, même téléphone éteint (triple sécurité).
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Gestion des collectes</strong>
+                Ajout/suppression de dates via une interface intuitive par mois.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Sélection multiple</strong>
+                Sélection de plusieurs jours en un seul geste pour un type de collecte.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Synchronisation cloud</strong>
+                Données stockées dans Firebase Firestore avec cache local automatique.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Guide intégré</strong>
+                Mode d'emploi accessible depuis l'application pour les utilisateurs.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Splash screen natif</strong>
+                Écran de démarrage animé avec logo, dégradé vert et chargement des services.
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Écran Calendrier</h2>
+            <p>L'écran principal affiche un calendrier mensuel avec :</p>
+            <ul>
+              <li><strong>Carte de la prochaine collecte</strong> en haut, colorée selon le type</li>
+              <li><strong>Légende</strong> des 5 types de collecte avec leurs couleurs</li>
+              <li><strong>Calendrier mensuel</strong> (package <code>table_calendar</code>) avec pastilles colorées sous chaque jour</li>
+              <li><strong>Détails du jour sélectionné</strong> en bas avec la liste des collectes prévues</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Écran Gestion</h2>
+            <p>Interface d'administration des collectes :</p>
+            <ul>
+              <li><strong>Sélecteur d'année</strong> avec flèches de navigation</li>
+              <li><strong>Grille de 12 mois</strong> avec icônes saisonnières et compteur de collectes par mois</li>
+              <li><strong>Éditeur de mois</strong> (clic sur un mois) :
+                <ul>
+                  <li>Bandeau de sélection du type de collecte (chips colorés)</li>
+                  <li>Grille calendrier cliquable (tap pour ajouter/retirer)</li>
+                  <li>Appui long pour voir et supprimer individuellement les collectes d'un jour</li>
+                  <li>Sauvegarde en batch vers Firestore avec invalidation du cache</li>
+                  <li>Détection des modifications non sauvegardées</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Système de notifications</h2>
+            <p>Les notifications sont programmées automatiquement au démarrage de l'application pour chaque collecte future.</p>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr><th>Mécanisme</th><th>Fiabilité</th><th>Fonctionne si</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>zonedSchedule</strong></td>
+                    <td>Haute</td>
+                    <td>App en arrière-plan, téléphone allumé</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Android Alarm Manager</strong></td>
+                    <td>Très haute</td>
+                    <td>App fermée, téléphone allumé, survit au reboot</td>
+                  </tr>
+                  <tr>
+                    <td><strong>WorkManager</strong></td>
+                    <td>Filet de sécurité</td>
+                    <td>Vérification périodique + tâches one-off</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Timer (foreground)</strong></td>
+                    <td>Garantie</td>
+                    <td>App ouverte au moment de la notification</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="callout callout-warning">
+              <span class="callout-icon">&#9888;</span>
+              <div class="callout-body">
+                <div class="callout-title">Appareils Xiaomi / Redmi</div>
+                <p>L'application invite l'utilisateur à désactiver l'optimisation de batterie au premier lancement pour garantir la réception des notifications en arrière-plan.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-footer">
+            <a href="../architecture/overview.html">&#8592; Architecture</a>
+            <a href="../guide/installation.html">Suivant : Installation &#8594;</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>
