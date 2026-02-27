@@ -36,12 +36,16 @@ cd app-notiwaste
 # Installer les dépendances
 flutter pub get
 
+# Configurer les clés Firebase (voir section ci-dessous)
+cp .env.example.json .env.json
+# → Remplir .env.json avec vos clés Firebase
+
 # Générer les icônes et le splash screen
 dart run flutter_launcher_icons
 dart run flutter_native_splash:create
 
 # Lancer l'application
-flutter run
+flutter run --dart-define-from-file=.env.json
 ```
 
 ## Configuration Firebase
@@ -49,7 +53,9 @@ flutter run
 1. Créer un projet sur [Firebase Console](https://console.firebase.google.com/)
 2. Activer **Firestore Database** et **Cloud Messaging**
 3. Ajouter une app Android, télécharger `google-services.json` et le placer dans `android/app/`
-4. Mettre à jour `lib/firebase_options.dart` avec vos clés
+4. Copier `.env.example.json` en `.env.json` et y renseigner vos clés Firebase
+
+> **Sécurité** : les clés Firebase sont chargées via `--dart-define-from-file`. Le fichier `.env.json` est ignoré par Git. Ne jamais commiter de clés en dur.
 
 ## Structure du projet
 
@@ -82,10 +88,10 @@ La documentation technique complète est disponible dans le dossier `documentati
 
 ```bash
 # APK (installation directe)
-flutter build apk --release
+flutter build apk --release --dart-define-from-file=.env.json
 
 # App Bundle (Google Play Store)
-flutter build appbundle --release
+flutter build appbundle --release --dart-define-from-file=.env.json
 ```
 
 ## Licence

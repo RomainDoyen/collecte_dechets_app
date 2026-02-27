@@ -49,3 +49,7 @@ firebase.json
 firestore.rules
 .flutter-plugins-dependencies
 .firebaserc
+
+# Clés et secrets
+.env.json
+google-services.json

@@ -91,8 +91,30 @@ cd app-notiwaste</code></pre>
                   <li>Activez <strong>Cloud Messaging</strong></li>
                   <li>Ajoutez une app <strong>Android</strong> et téléchargez <code>google-services.json</code></li>
                   <li>Placez le fichier dans <code>android/app/</code></li>
-                  <li>Mettez à jour <code>lib/firebase_options.dart</code> avec vos clés</li>
                 </ul>
+              </li>
+              <li>
+                <div class="step-title">Configurer les clés d'environnement</div>
+                <p>Les clés Firebase ne sont <strong>pas en dur</strong> dans le code. Elles sont chargées au build via <code>--dart-define-from-file</code>.</p>
+<pre><code>cp .env.example.json .env.json</code></pre>
+                <p>Ouvrez <code>.env.json</code> et renseignez vos clés :</p>
+<pre><code>{
+  "ANDROID_API_KEY": "votre-cle-api-android",
+  "ANDROID_APP_ID": "votre-app-id-android",
+  "ANDROID_MESSAGING_SENDER_ID": "votre-sender-id",
+  "ANDROID_PROJECT_ID": "votre-project-id",
+  "ANDROID_STORAGE_BUCKET": "votre-project-id.firebasestorage.app",
+  "IOS_API_KEY": "votre-cle-api-ios",
+  "IOS_APP_ID": "votre-app-id-ios",
+  ...
+}</code></pre>
+                <div class="callout callout-warning">
+                  <span class="callout-icon">&#128274;</span>
+                  <div class="callout-body">
+                    <div class="callout-title">Sécurité</div>
+                    <p>Le fichier <code>.env.json</code> est ignoré par Git. Ne le commitez jamais. Un template <code>.env.example.json</code> est fourni comme référence.</p>
+                  </div>
+                </div>
               </li>
               <li>
                 <div class="step-title">Générer les icônes</div>
@@ -102,10 +124,10 @@ dart run flutter_native_splash:create</code></pre>
               <li>
                 <div class="step-title">Lancer l'application</div>
 <pre><code># En mode debug
-flutter run
+flutter run --dart-define-from-file=.env.json
 
 # En mode release (optimisé)
-flutter run --release</code></pre>
+flutter run --release --dart-define-from-file=.env.json</code></pre>
               </li>
             </ol>
           </div>
@@ -113,11 +135,11 @@ flutter run --release</code></pre>
           <div class="section-card">
             <h2 class="mt-0">Compilation (APK / App Bundle)</h2>
             <h3>APK (installation directe)</h3>
-<pre><code>flutter build apk --release</code></pre>
+<pre><code>flutter build apk --release --dart-define-from-file=.env.json</code></pre>
             <p>Le fichier sera généré dans <code>build/app/outputs/flutter-apk/app-release.apk</code></p>
 
             <h3>App Bundle (Google Play Store)</h3>
-<pre><code>flutter build appbundle --release</code></pre>
+<pre><code>flutter build appbundle --release --dart-define-from-file=.env.json</code></pre>
             <p>Le fichier sera généré dans <code>build/app/outputs/bundle/release/app-release.aab</code></p>
           </div>
 
