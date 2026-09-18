@@ -6,6 +6,12 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class DefaultFirebaseOptions {
+  static bool isConfigured(FirebaseOptions options) {
+    return options.apiKey.isNotEmpty &&
+        options.appId.isNotEmpty &&
+        options.projectId.isNotEmpty;
+  }
+
   static FirebaseOptions get currentPlatform {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:

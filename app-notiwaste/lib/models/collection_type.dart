@@ -1,15 +1,55 @@
+import 'package:flutter/material.dart';
+
 enum CollectionType {
-  orduresMenageres('Poubelle grise', 'Gris', '🗑️'),
-  collecteSelective('Poubelle jaune', 'Jaune', '♻️'),
-  dechetsVerts('Déchets Verts', 'Vert', '🍃'),
-  encombrants('Encombrants', 'Rouge', '🛋️'),
-  dechetsMetalliques('Déchets Métalliques', 'Bleu', '🚲');
+  orduresMenageres('Poubelle grise', 'Gris', Icons.delete),
+  collecteSelective('Poubelle jaune', 'Jaune', Icons.recycling),
+  dechetsVerts('Déchets Verts', 'Vert', Icons.grass),
+  encombrants('Encombrants', 'Rouge', Icons.weekend),
+  dechetsMetalliques('Déchets Métalliques', 'Bleu', Icons.pedal_bike);
 
   const CollectionType(this.name, this.color, this.icon);
 
   final String name;
   final String color;
-  final String icon;
+  final IconData icon;
+
+  Color get tagColor {
+    switch (this) {
+      case CollectionType.orduresMenageres:
+        return const Color(0xFF757575);
+      case CollectionType.collecteSelective:
+        return const Color(0xFFF9A825);
+      case CollectionType.dechetsVerts:
+        return const Color(0xFF43A047);
+      case CollectionType.encombrants:
+        return const Color(0xFFE53935);
+      case CollectionType.dechetsMetalliques:
+        return const Color(0xFF1E88E5);
+    }
+  }
+
+  static CollectionType fromName(String typeName) {
+    switch (typeName) {
+      case 'Ordures Ménagères':
+      case 'Poubelle grise':
+        return CollectionType.orduresMenageres;
+      case 'Collecte Sélective':
+      case 'Poubelle jaune':
+        return CollectionType.collecteSelective;
+      case 'Déchets Verts':
+      case 'Déchets Végétaux':
+        return CollectionType.dechetsVerts;
+      case 'Encombrants':
+        return CollectionType.encombrants;
+      case 'Déchets Métalliques':
+        return CollectionType.dechetsMetalliques;
+      default:
+        return CollectionType.values.firstWhere(
+          (e) => e.name == typeName,
+          orElse: () => CollectionType.orduresMenageres,
+        );
+    }
+  }
 }
 
 class CollectionEvent {
@@ -28,38 +68,9 @@ class CollectionEvent {
   });
 
   factory CollectionEvent.fromMap(Map<String, dynamic> map) {
-    // Mapping des noms du JSON vers les types
-    final String typeName = map['type'] as String;
-    CollectionType collectionType;
-
-    switch (typeName) {
-      case 'Ordures Ménagères':
-        collectionType = CollectionType.orduresMenageres;
-        break;
-      case 'Collecte Sélective':
-        collectionType = CollectionType.collecteSelective;
-        break;
-      case 'Déchets Verts':
-      case 'Déchets Végétaux':
-        collectionType = CollectionType.dechetsVerts;
-        break;
-      case 'Encombrants':
-        collectionType = CollectionType.encombrants;
-        break;
-      case 'Déchets Métalliques':
-        collectionType = CollectionType.dechetsMetalliques;
-        break;
-      // Fallback : essayer de trouver par le nom de l'enum
-      default:
-        collectionType = CollectionType.values.firstWhere(
-          (e) => e.name == typeName,
-          orElse: () => CollectionType.orduresMenageres, // Par défaut
-        );
-    }
-
     return CollectionEvent(
       date: DateTime.parse(map['date']),
-      type: collectionType,
+      type: CollectionType.fromName(map['type'] as String),
       notes: map['notes'],
       isHoliday: map['isHoliday'] ?? false,
       isCatchUp: map['isCatchUp'] ?? false,

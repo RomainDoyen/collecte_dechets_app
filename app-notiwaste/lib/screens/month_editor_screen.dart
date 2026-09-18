@@ -320,7 +320,11 @@ class _MonthEditorScreenState extends State<MonthEditorScreen> {
                 label: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(type.icon, style: const TextStyle(fontSize: 16)),
+                    Icon(
+                      type.icon,
+                      size: 18,
+                      color: isSelected ? Colors.white : color,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       type.name,
@@ -472,7 +476,11 @@ class _MonthEditorScreenState extends State<MonthEditorScreen> {
                         ),
                         child: Row(
                           children: [
-                            Text(type.icon, style: const TextStyle(fontSize: 20)),
+                            Icon(
+                              type.icon,
+                              size: 22,
+                              color: _getColorForType(type),
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(

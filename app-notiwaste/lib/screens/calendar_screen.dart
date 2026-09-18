@@ -120,9 +120,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Text(
+                        Icon(
                           _nextCollection!.type.icon,
-                          style: const TextStyle(fontSize: 24),
+                          size: 28,
+                          color: Colors.white,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -186,13 +187,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                width: 16,
-                                height: 16,
-                                decoration: BoxDecoration(
-                                  color: _getColorForCollectionType(type),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                              Icon(
+                                type.icon,
+                                size: 16,
+                                color: _getColorForCollectionType(type),
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -332,9 +330,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             ),
                             child: Row(
                               children: [
-                                Text(
+                                Icon(
                                   event.type.icon,
-                                  style: const TextStyle(fontSize: 20),
+                                  size: 22,
+                                  color: Colors.white,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(

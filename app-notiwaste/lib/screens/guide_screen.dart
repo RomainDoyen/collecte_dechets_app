@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/collection_type.dart';
 
 class GuideScreen extends StatelessWidget {
   const GuideScreen({super.key});
@@ -123,15 +124,37 @@ class GuideScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegend() {
-    final types = [
-      ('Poubelle grise', Colors.grey, 'Ordures ménagères'),
-      ('Poubelle jaune', Colors.yellow.shade700, 'Collecte sélective (tri)'),
-      ('Déchets Verts', Colors.green.shade600, 'Végétaux, tontes, branches'),
-      ('Encombrants', Colors.red.shade600, 'Meubles, appareils volumineux'),
-      ('Déchets Métalliques', Colors.blue.shade600, 'Ferraille, métaux'),
-    ];
+  Color _colorForType(CollectionType type) {
+    switch (type) {
+      case CollectionType.orduresMenageres:
+        return Colors.grey;
+      case CollectionType.collecteSelective:
+        return Colors.yellow.shade700;
+      case CollectionType.dechetsVerts:
+        return Colors.green.shade600;
+      case CollectionType.encombrants:
+        return Colors.red.shade600;
+      case CollectionType.dechetsMetalliques:
+        return Colors.blue.shade600;
+    }
+  }
 
+  String _descriptionForType(CollectionType type) {
+    switch (type) {
+      case CollectionType.orduresMenageres:
+        return 'Ordures ménagères';
+      case CollectionType.collecteSelective:
+        return 'Collecte sélective (tri)';
+      case CollectionType.dechetsVerts:
+        return 'Végétaux, tontes, branches';
+      case CollectionType.encombrants:
+        return 'Meubles, appareils volumineux';
+      case CollectionType.dechetsMetalliques:
+        return 'Ferraille, métaux';
+    }
+  }
+
+  Widget _buildLegend() {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -154,33 +177,27 @@ class GuideScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            ...types.map((type) {
+            ...CollectionType.values.map((type) {
+              final color = _colorForType(type);
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
                   children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: type.$2,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
+                    Icon(type.icon, size: 22, color: color),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            type.$1,
+                            type.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
                           ),
                           Text(
-                            type.$3,
+                            _descriptionForType(type),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],

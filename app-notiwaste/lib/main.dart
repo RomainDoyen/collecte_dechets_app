@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
-import 'services/notifications.dart';
 
 // Handler pour les messages FCM en background
 // Cette fonction DOIT être une fonction top-level (pas dans une classe)
@@ -73,15 +72,39 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialiser Android Alarm Manager Plus (DOIT être fait avant runApp)
-  await AndroidAlarmManager.initialize();
-
-  // Enregistrer le handler pour les messages en background
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // Ne jamais bloquer le premier frame trop longtemps : le splash natif
+  // reste collé tant que runApp() n'a pas eu lieu.
+  await Future.wait([
+    _initFirebase(),
+    _initAlarmManager(),
+  ]);
 
   runApp(const CollecteDechetsApp());
+}
+
+Future<void> _initFirebase() async {
+  try {
+    final options = DefaultFirebaseOptions.currentPlatform;
+    if (!DefaultFirebaseOptions.isConfigured(options)) {
+      debugPrint('Firebase ignoré: clés absentes (build sans .env.json)');
+      return;
+    }
+    await Firebase.initializeApp(
+      options: options,
+    ).timeout(const Duration(seconds: 8));
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  } catch (e) {
+    debugPrint('Firebase init ignorée: $e');
+  }
+}
+
+Future<void> _initAlarmManager() async {
+  try {
+    await AndroidAlarmManager.initialize().timeout(const Duration(seconds: 5));
+  } catch (e) {
+    debugPrint('AlarmManager init ignorée: $e');
+  }
 }
 
 class CollecteDechetsApp extends StatelessWidget {

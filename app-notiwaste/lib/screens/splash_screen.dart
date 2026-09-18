@@ -45,41 +45,42 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _startInitialization() async {
-    // Démarrer l'animation
     _animationController.forward();
 
-    // Initialiser les services
-    await _initializeServices();
-
-    // Attendre que l'animation soit terminée (minimum 1 seconde)
-    await Future.delayed(const Duration(milliseconds: 1500));
-
-    // Naviguer vers l'écran principal
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder:
-              (context, animation, secondaryAnimation) =>
-                  const HomeScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 500),
+    try {
+      await Future.wait([
+        _initializeServices().timeout(
+          const Duration(seconds: 8),
+          onTimeout: () {},
         ),
-      );
+        Future.delayed(const Duration(milliseconds: 1200)),
+      ]);
+    } catch (e) {
+      debugPrint('Erreur init splash: $e');
     }
+
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder:
+            (context, animation, secondaryAnimation) => const HomeScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+    );
   }
 
   Future<void> _initializeServices() async {
     try {
       await Notifications.init();
       await Notifications.scheduleAll();
-
       try {
         await FCMService.initialize();
       } catch (_) {}
     } catch (e) {
-      print('Erreur init: $e');
+      debugPrint('Erreur init: $e');
     }
   }
 

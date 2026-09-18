@@ -5,23 +5,70 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'collection_service.dart';
+import 'reminder_settings.dart';
+import '../models/collection_type.dart';
 
 /// Service de notifications ULTRA SIMPLE
 /// Rien d'autre que le strict minimum
 class Notifications {
-  // ⏰ HEURE DE NOTIFICATION (modifiable facilement)
-  static const int notificationHour = 18; // Heure (0-23)
-  static const int notificationMinute = 00; // Minute (0-59)
-
   static final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
   static bool _init = false;
   static Timer? _checkTimer;
   static final Map<int, Timer> _activeTimers = {};
   static bool _scheduling = false;
+
+  static const _chipChannel = MethodChannel('notiwaste/chip_notifications');
+
+  static NotificationDetails _detailsFor(CollectionType type) {
+    final android = AndroidNotificationDetails(
+      'notifications',
+      'Notifications',
+      importance: Importance.max,
+      priority: Priority.max,
+      icon: 'ic_notification_recycling',
+      showWhen: true,
+      enableVibration: true,
+      playSound: true,
+    );
+    const ios = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+    return NotificationDetails(android: android, iOS: ios);
+  }
+
+  static Future<void> _showCollectionNotification({
+    required int id,
+    required String typeName,
+    required String body,
+    FlutterLocalNotificationsPlugin? plugin,
+  }) async {
+    try {
+      await _chipChannel.invokeMethod('show', {
+        'id': id,
+        'typeName': typeName,
+        'body': body,
+      });
+    } catch (_) {
+      final details = _detailsForName(typeName);
+      await (plugin ?? _notifications).show(
+        id,
+        '$typeName demain !',
+        body,
+        details,
+      );
+    }
+  }
+
+  static NotificationDetails _detailsForName(String typeName) {
+    return _detailsFor(CollectionType.fromName(typeName));
+  }
 
   /// Initialiser - UNIQUEMENT ce qui est nécessaire
   static Future<bool> init() async {
@@ -132,32 +179,21 @@ class Notifications {
     }
   }
 
+  /// Envoyer une notification IMMÉDIATE par type — pour vérifier les couleurs
+  static Future<void> showColorTests() async {
+    await init();
+    for (final type in CollectionType.values) {
+      await _showCollectionNotification(
+        id: 9100 + type.index,
+        typeName: type.name,
+        body: 'Notification de test',
+      );
+    }
+  }
+
   /// Envoyer une notification IMMÉDIATE - TEST UNIQUEMENT
   static Future<void> test() async {
-    try {
-      const android = AndroidNotificationDetails(
-        'notifications',
-        'Notifications',
-        importance: Importance.max,
-        priority: Priority.max,
-        icon: 'ic_notification_recycling',
-      );
-
-      const ios = DarwinNotificationDetails();
-
-      const details = NotificationDetails(android: android, iOS: ios);
-
-      await _notifications.show(
-        1,
-        'TEST',
-        'Si vous voyez ceci, ça fonctionne !',
-        details,
-      );
-
-      // print('✅ Notification test envoyée');
-    } catch (e) {
-      // print('❌ Erreur test: $e');
-    }
+    await showColorTests();
   }
 
   /// Programmer une notification dans X secondes (pour test)
@@ -306,6 +342,7 @@ class Notifications {
 
       // Récupérer les collectes
       final collections = await CollectionService.getAllCollections();
+      final reminder = await ReminderSettings.load();
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
 
@@ -335,15 +372,11 @@ class Notifications {
         );
 
         // Notification = veille à l'heure configurée
-        final notificationDate = collectionDate.subtract(
-          const Duration(days: 1),
-        );
-        final scheduled = DateTime(
-          notificationDate.year,
-          notificationDate.month,
-          notificationDate.day,
-          notificationHour,
-          notificationMinute,
+        final scheduled = reminder.scheduledAt(collectionDate);
+        final notificationDate = DateTime(
+          scheduled.year,
+          scheduled.month,
+          scheduled.day,
         );
 
         // Si la date est passée, ignorer
@@ -354,35 +387,19 @@ class Notifications {
             (notificationDate.year == now.year &&
                     notificationDate.month == now.month &&
                     notificationDate.day == now.day &&
-                    (now.hour > notificationHour ||
-                        (now.hour == notificationHour &&
-                            now.minute >= notificationMinute)))
+                    (now.hour > reminder.hour ||
+                        (now.hour == reminder.hour &&
+                            now.minute >= reminder.minute)))
                 ? DateTime(
                   now.year,
                   now.month,
                   now.day + 1,
-                  notificationHour,
-                  notificationMinute,
+                  reminder.hour,
+                  reminder.minute,
                 )
                 : scheduled;
 
-        const android = AndroidNotificationDetails(
-          'notifications',
-          'Notifications',
-          importance: Importance.max,
-          priority: Priority.max,
-          icon: 'ic_notification_recycling',
-          showWhen: true,
-          enableVibration: true,
-          playSound: true,
-        );
-
-        const ios = DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        );
-        const details = NotificationDetails(android: android, iOS: ios);
+        final details = _detailsFor(collection.type);
 
         // Programmer avec zonedSchedule
         final tzDate = tz.TZDateTime(
@@ -396,7 +413,7 @@ class Notifications {
 
         await _notifications.zonedSchedule(
           collection.hashCode,
-          '🗑️ ${collection.type.name} demain !',
+          '${collection.type.name} demain !',
           'N\'oubliez pas de sortir vos poubelles demain matin',
           tzDate,
           details,
@@ -409,15 +426,12 @@ class Notifications {
         final delay = finalDate.difference(now);
         if (delay.inSeconds > 0) {
           final timer = Timer(delay, () {
-            // Forcer l'affichage au moment prévu
-            _notifications.show(
-              collection.hashCode,
-              '🗑️ ${collection.type.name} demain !',
-              'N\'oubliez pas de sortir vos poubelles demain matin',
-              details,
+            _showCollectionNotification(
+              id: collection.hashCode,
+              typeName: collection.type.name,
+              body: 'N\'oubliez pas de sortir vos poubelles demain matin',
             );
             _activeTimers.remove(collection.hashCode);
-            // print('🔔 Notification ${collection.type.name} forcée via Timer');
           });
           _activeTimers[collection.hashCode] = timer;
         }
@@ -580,28 +594,11 @@ class Notifications {
         await androidPlugin.createNotificationChannel(channel);
       }
 
-      const androidDetails = AndroidNotificationDetails(
-        'notifications',
-        'Notifications',
-        importance: Importance.max,
-        priority: Priority.max,
-        icon: 'ic_notification_recycling',
-        showWhen: true,
-        enableVibration: true,
-        playSound: true,
-      );
-      const ios = DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      );
-      const details = NotificationDetails(android: androidDetails, iOS: ios);
-
-      await notifications.show(
-        id,
-        '🗑️ $typeName demain !',
-        'N\'oubliez pas de sortir vos poubelles demain matin',
-        details,
+      await _showCollectionNotification(
+        id: id,
+        typeName: typeName,
+        body: 'N\'oubliez pas de sortir vos poubelles demain matin',
+        plugin: notifications,
       );
 
       // Supprimer de SharedPreferences
@@ -728,28 +725,11 @@ class Notifications {
             await prefs.setString(keyCheck, now.toIso8601String());
 
             // print('🔔 [WorkManager] ✅ Affichage de la notification $typeName');
-            const android = AndroidNotificationDetails(
-              'notifications',
-              'Notifications',
-              importance: Importance.max,
-              priority: Priority.max,
-              icon: 'ic_notification_recycling',
-              showWhen: true,
-              enableVibration: true,
-              playSound: true,
-            );
-            const ios = DarwinNotificationDetails(
-              presentAlert: true,
-              presentBadge: true,
-              presentSound: true,
-            );
-            const details = NotificationDetails(android: android, iOS: ios);
-
-            await notifications.show(
-              id,
-              '🗑️ $typeName demain !',
-              'N\'oubliez pas de sortir vos poubelles demain matin',
-              details,
+            await _showCollectionNotification(
+              id: id,
+              typeName: typeName,
+              body: 'N\'oubliez pas de sortir vos poubelles demain matin',
+              plugin: notifications,
             );
 
             // Supprimer de SharedPreferences
