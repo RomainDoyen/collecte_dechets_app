@@ -85,14 +85,17 @@ void main() async {
 
 Future<void> _initFirebase() async {
   try {
+    if (Firebase.apps.isNotEmpty) return;
     final options = DefaultFirebaseOptions.currentPlatform;
-    if (!DefaultFirebaseOptions.isConfigured(options)) {
-      debugPrint('Firebase ignoré: clés absentes (build sans .env.json)');
-      return;
+    if (DefaultFirebaseOptions.isConfigured(options)) {
+      await Firebase.initializeApp(
+        options: options,
+      ).timeout(const Duration(seconds: 8));
+    } else {
+      // Sans --dart-define-from-file=.env.json les String.fromEnvironment
+      // sont vides. Sur Android, google-services.json suffit.
+      await Firebase.initializeApp().timeout(const Duration(seconds: 8));
     }
-    await Firebase.initializeApp(
-      options: options,
-    ).timeout(const Duration(seconds: 8));
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   } catch (e) {
     debugPrint('Firebase init ignorée: $e');

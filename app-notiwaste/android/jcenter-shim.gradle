@@ -1,0 +1,6 @@
+import org.gradle.api.artifacts.dsl.RepositoryHandler
+
+// Gradle 9 a retiré jcenter(). Les plugins Flutter encore non migrés l'appellent encore.
+RepositoryHandler.metaClass.jcenter = { Closure ignored = null ->
+    mavenCentral()
+}
