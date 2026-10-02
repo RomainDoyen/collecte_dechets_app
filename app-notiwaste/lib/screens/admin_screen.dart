@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'month_editor_screen.dart';
 import '../services/notifications.dart';
 import '../services/reminder_settings.dart';
+import '../widgets/rounded_sheet_body.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -18,7 +19,12 @@ class _AdminScreenState extends State<AdminScreen>
   Map<int, int> _eventCounts = {};
   bool _loading = true;
   ReminderSettings _reminder = const ReminderSettings();
+  ReminderSettings _savedReminder = const ReminderSettings();
   bool _reminderSaving = false;
+
+  bool get _hasReminderChanges =>
+      _reminder.hour != _savedReminder.hour ||
+      _reminder.minute != _savedReminder.minute;
 
   static const List<String> _monthNames = [
     'Janvier', 'Février', 'Mars', 'Avril',
@@ -52,7 +58,10 @@ class _AdminScreenState extends State<AdminScreen>
   Future<void> _loadReminderTime() async {
     final settings = await ReminderSettings.load();
     if (!mounted) return;
-    setState(() => _reminder = settings);
+    setState(() {
+      _reminder = settings;
+      _savedReminder = settings;
+    });
   }
 
   Future<void> _pickReminderTime() async {
@@ -71,23 +80,24 @@ class _AdminScreenState extends State<AdminScreen>
     );
 
     if (picked == null) return;
-    if (picked.hour == _reminder.hour && picked.minute == _reminder.minute) {
-      return;
-    }
 
-    final next = ReminderSettings(hour: picked.hour, minute: picked.minute);
     setState(() {
-      _reminder = next;
-      _reminderSaving = true;
+      _reminder = ReminderSettings(hour: picked.hour, minute: picked.minute);
     });
+  }
 
+  Future<void> _saveReminderChanges() async {
+    if (_reminderSaving || !_hasReminderChanges) return;
+
+    setState(() => _reminderSaving = true);
     try {
-      await next.save();
+      await _reminder.save();
       await Notifications.scheduleAll();
       if (!mounted) return;
+      setState(() => _savedReminder = _reminder);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Rappels reprogrammés à ${next.formatted}'),
+          content: Text('Rappels enregistrés à ${_reminder.formatted}'),
           backgroundColor: const Color(0xFF2E7D32),
         ),
       );
@@ -103,27 +113,6 @@ class _AdminScreenState extends State<AdminScreen>
       if (mounted) {
         setState(() => _reminderSaving = false);
       }
-    }
-  }
-
-  Future<void> _sendTestNotifications() async {
-    try {
-      await Notifications.showColorTests();
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('5 notifications de test envoyées'),
-          backgroundColor: Color(0xFF2E7D32),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
@@ -184,13 +173,7 @@ class _AdminScreenState extends State<AdminScreen>
         title: const Text('Gestion'),
         centerTitle: true,
         actions: [
-          if (isReminderTab)
-            IconButton(
-              icon: const Icon(Icons.notifications_active_outlined),
-              tooltip: 'Tester les notifications',
-              onPressed: _sendTestNotifications,
-            )
-          else
+          if (!isReminderTab)
             IconButton(
               icon: const Icon(Icons.refresh),
               tooltip: 'Rafraîchir',
@@ -201,6 +184,8 @@ class _AdminScreenState extends State<AdminScreen>
           controller: _tabs,
           indicatorColor: Colors.white,
           indicatorWeight: 3,
+          dividerColor: Colors.transparent,
+          dividerHeight: 0,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: const [
@@ -209,12 +194,14 @@ class _AdminScreenState extends State<AdminScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabs,
-        children: [
-          _buildReminderTab(),
-          _buildCollectionsTab(),
-        ],
+      body: RoundedSheetBody(
+        child: TabBarView(
+          controller: _tabs,
+          children: [
+            _buildReminderTab(),
+            _buildCollectionsTab(),
+          ],
+        ),
       ),
     );
   }
@@ -224,12 +211,6 @@ class _AdminScreenState extends State<AdminScreen>
       padding: const EdgeInsets.all(20),
       children: [
         const SizedBox(height: 12),
-        const Icon(
-          Icons.notifications_active,
-          size: 48,
-          color: Color(0xFF2E7D32),
-        ),
-        const SizedBox(height: 16),
         const Text(
           'Heure de rappel',
           textAlign: TextAlign.center,
@@ -267,22 +248,15 @@ class _AdminScreenState extends State<AdminScreen>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (_reminderSaving)
-                    const SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  else
-                    Text(
-                      _reminder.formatted,
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2E7D32),
-                        letterSpacing: 1,
-                      ),
+                  Text(
+                    _reminder.formatted,
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                      letterSpacing: 1,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -290,11 +264,27 @@ class _AdminScreenState extends State<AdminScreen>
         ),
         const SizedBox(height: 24),
         FilledButton.icon(
-          onPressed: _sendTestNotifications,
-          icon: const Icon(Icons.notifications_active_outlined),
-          label: const Text('Tester les notifications'),
+          onPressed: _hasReminderChanges && !_reminderSaving
+              ? _saveReminderChanges
+              : null,
+          icon: _reminderSaving
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Icon(Icons.save),
+          label: Text(
+            _reminderSaving
+                ? 'Enregistrement...'
+                : 'Enregistrer les modifications',
+          ),
           style: FilledButton.styleFrom(
             backgroundColor: const Color(0xFF2E7D32),
+            disabledBackgroundColor: Colors.grey[300],
             padding: const EdgeInsets.symmetric(vertical: 14),
           ),
         ),

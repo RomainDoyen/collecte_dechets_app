@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/rounded_sheet_body.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -10,7 +11,8 @@ class AboutScreen extends StatelessWidget {
         title: const Text('A propos'),
         centerTitle: true,
       ),
-      body: ListView(
+      body: RoundedSheetBody(
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 16),
@@ -135,6 +137,7 @@ class AboutScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
+                  _buildFeature(Icons.map_outlined, 'Carte des lieux de dépôt'),
                   _buildFeature(Icons.calendar_month, 'Calendrier des collectes'),
                   _buildFeature(Icons.notifications_active, 'Notifications automatiques'),
                   _buildFeature(Icons.edit_calendar, 'Gestion des dates de collecte'),
@@ -145,6 +148,7 @@ class AboutScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
         ],
+        ),
       ),
     );
   }

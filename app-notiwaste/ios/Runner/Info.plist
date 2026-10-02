@@ -45,6 +45,15 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Pour afficher les points de collecte autour de toi.</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>waze</string>
+			<string>comgooglemaps</string>
+			<string>https</string>
+			<string>tel</string>
+		</array>
 		<key>UIStatusBarHidden</key>
 		<false/>
 		<key>UIBackgroundModes</key>

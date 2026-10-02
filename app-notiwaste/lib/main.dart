@@ -122,9 +122,13 @@ class CollecteDechetsApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D32)),
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 105, 153, 50),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromARGB(255, 105, 153, 50),
           foregroundColor: Colors.white,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
         ),
       ),
       home: const SplashScreen(),

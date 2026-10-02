@@ -38,7 +38,7 @@
         </nav>
         <div class="sidebar-footer">
           <span class="version-badge">v1.0</span>
-          <span>Mise à jour : 2026-02-27</span>
+          <span>Mise à jour : 2026-10-02</span>
         </div>
       </aside>
 
@@ -78,6 +78,13 @@
             <div class="feature-item">
               <div class="feature-check">&#10003;</div>
               <div class="feature-text">
+                <strong>Lieux de dépôt CIREST</strong>
+                Carte OpenStreetMap, filtres, recherche, géolocalisation et itinéraires (Maps / Waze).
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
                 <strong>Gestion des collectes</strong>
                 Ajout/suppression de dates via une interface intuitive par mois.
               </div>
@@ -85,8 +92,15 @@
             <div class="feature-item">
               <div class="feature-check">&#10003;</div>
               <div class="feature-text">
-                <strong>Sélection multiple</strong>
-                Sélection de plusieurs jours en un seul geste pour un type de collecte.
+                <strong>Heure de rappel</strong>
+                Choix de l'heure de notification la veille, enregistrée sur l'appareil.
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-check">&#10003;</div>
+              <div class="feature-text">
+                <strong>Onglet Infos</strong>
+                Guide, à propos et mentions légales regroupés au même endroit.
               </div>
             </div>
             <div class="feature-item">
@@ -100,7 +114,7 @@
               <div class="feature-check">&#10003;</div>
               <div class="feature-text">
                 <strong>Guide intégré</strong>
-                Mode d'emploi accessible depuis l'application pour les utilisateurs.
+                Mode d'emploi accessible depuis l'onglet Infos.
               </div>
             </div>
             <div class="feature-item">
@@ -127,17 +141,28 @@
             <h2 class="mt-0">Écran Gestion</h2>
             <p>Interface d'administration des collectes :</p>
             <ul>
+              <li><strong>Onglet Rappels</strong> — choix de l'heure de notification la veille, puis enregistrement</li>
               <li><strong>Sélecteur d'année</strong> avec flèches de navigation</li>
               <li><strong>Grille de 12 mois</strong> avec icônes saisonnières et compteur de collectes par mois</li>
               <li><strong>Éditeur de mois</strong> (clic sur un mois) :
                 <ul>
-                  <li>Bandeau de sélection du type de collecte (chips colorés)</li>
-                  <li>Grille calendrier cliquable (tap pour ajouter/retirer)</li>
-                  <li>Appui long pour voir et supprimer individuellement les collectes d'un jour</li>
+                  <li>Tap sur un jour pour ouvrir une feuille (une ou plusieurs collectes à cocher)</li>
                   <li>Sauvegarde en batch vers Firestore avec invalidation du cache</li>
                   <li>Détection des modifications non sauvegardées</li>
                 </ul>
               </li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2 class="mt-0">Écran Lieux</h2>
+            <p>Carte des points d'apport du CIREST, alimentée par l'API ADEME « Que faire de mes objets &amp; déchets » :</p>
+            <ul>
+              <li><strong>Marqueurs par catégorie</strong> — piles, médicaments, vêtements, électronique, autres</li>
+              <li><strong>Autour de moi</strong> — recentrage sur la position et tri des lieux par distance</li>
+              <li><strong>Filtrer</strong> — feuille avec barre de recherche, chips de catégorie et liste des lieux</li>
+              <li><strong>Fiche lieu</strong> — adresse, horaires, consignes, itinéraire Google Maps ou Waze</li>
+              <li><strong>Cache local</strong> — 7 jours via SharedPreferences</li>
             </ul>
           </div>
 
@@ -172,14 +197,6 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
-
-            <div class="callout callout-warning">
-              <span class="callout-icon">&#9888;</span>
-              <div class="callout-body">
-                <div class="callout-title">Appareils Xiaomi / Redmi</div>
-                <p>L'application invite l'utilisateur à désactiver l'optimisation de batterie au premier lancement pour garantir la réception des notifications en arrière-plan.</p>
-              </div>
             </div>
           </div>
 

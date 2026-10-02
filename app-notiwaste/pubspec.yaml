@@ -45,6 +45,10 @@ dependencies:
   shared_preferences: ^2.2.2
   disable_battery_optimization: ^1.1.1
   android_alarm_manager_plus: ^5.0.0
+  flutter_map: ^8.2.1
+  latlong2: ^0.9.1
+  url_launcher: ^6.3.2
+  geolocator: ^13.0.4
 
 dev_dependencies:
   flutter_test:

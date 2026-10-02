@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../models/collection_type.dart';
 import '../services/collection_service.dart';
+import '../widgets/rounded_sheet_body.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -85,7 +86,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: const Text('NotiWaste'),
         centerTitle: true,
       ),
-      body: ListView(
+      body: RoundedSheetBody(
+        child: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
               // Prochaine collecte
@@ -367,6 +369,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
               ),
         ],
+        ),
       ),
     );
   }

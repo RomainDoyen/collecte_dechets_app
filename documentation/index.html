@@ -63,7 +63,7 @@
 
         <div class="sidebar-footer">
           <span class="version-badge">v1.0</span>
-          <span>Mise à jour : 2026-02-27</span>
+          <span>Mise à jour : 2026-10-02</span>
         </div>
       </aside>
 
@@ -81,8 +81,8 @@
                 </div>
                 <h1>NotiWaste</h1>
                 <p>
-                  Application mobile de gestion des collectes de déchets.
-                  Calendrier interactif, notifications automatiques et gestion des dates directement depuis l'application.
+                  Application mobile de gestion des collectes de déchets à Sainte-Rose.
+                  Calendrier, lieux de dépôt CIREST, notifications et gestion des dates.
                 </p>
               </div>
               <div class="hero-logo">
@@ -94,7 +94,7 @@
           <div class="stats-row">
             <div class="stat">
               <div class="stat-value stat-value-green">4</div>
-              <div class="stat-label">Écrans</div>
+              <div class="stat-label">Onglets</div>
             </div>
             <div class="stat">
               <div class="stat-value stat-value-teal">5</div>
@@ -121,7 +121,7 @@
             <a href="./features/overview.html" class="card card-hover card-link">
               <div class="card-icon card-icon-green">&#9733;</div>
               <h3 class="mt-0 mb-sm">Fonctionnalités</h3>
-              <p class="text-muted text-sm mb-0">Calendrier, gestion des collectes, notifications, guide intégré et page à propos.</p>
+              <p class="text-muted text-sm mb-0">Calendrier, carte des lieux CIREST, gestion des collectes et onglet Infos.</p>
             </a>
             <a href="./guide/installation.html" class="card card-hover card-link">
               <div class="card-icon card-icon-purple">&#128640;</div>
@@ -145,6 +145,8 @@
                   <li><strong>Dart</strong> — Langage typé et performant</li>
                   <li><strong>Material 3</strong> — Design system moderne</li>
                   <li><strong>Table Calendar</strong> — Calendrier interactif</li>
+                  <li><strong>Flutter Map</strong> — Carte OpenStreetMap des lieux de dépôt</li>
+                  <li><strong>Geolocator</strong> — Position « autour de moi »</li>
                   <li><strong>WorkManager</strong> — Tâches en arrière-plan</li>
                   <li><strong>Android Alarm Manager</strong> — Alarmes exactes natives</li>
                 </ul>
@@ -160,7 +162,8 @@
                   <li><strong>Firebase Firestore</strong> — Base de données cloud NoSQL</li>
                   <li><strong>Firebase Cloud Messaging</strong> — Notifications push</li>
                   <li><strong>Flutter Local Notifications</strong> — Notifications locales programmées</li>
-                  <li><strong>SharedPreferences</strong> — Stockage local de données</li>
+                  <li><strong>ADEME</strong> — API des points d'apport (CIREST)</li>
+                  <li><strong>SharedPreferences</strong> — Heure de rappel et cache lieux</li>
                   <li><strong>Timezone</strong> — Gestion des fuseaux horaires (Indian/Reunion)</li>
                 </ul>
               </div>
@@ -174,20 +177,28 @@
 │   ├── main.dart                    # Point d'entrée
 │   ├── firebase_options.dart        # Configuration Firebase
 │   ├── models/
-│   │   └── collection_type.dart     # Modèle CollectionEvent + types
+│   │   ├── collection_type.dart     # Types et événements de collecte
+│   │   └── drop_off_point.dart      # Points d'apport ADEME / CIREST
 │   ├── services/
 │   │   ├── collection_service.dart  # Chargement des données Firestore
+│   │   ├── drop_off_service.dart    # API ADEME (cache 7 jours)
 │   │   ├── notifications.dart       # Système de notifications complet
+│   │   ├── reminder_settings.dart   # Heure de rappel locale
 │   │   ├── fcm_service.dart         # Firebase Cloud Messaging
 │   │   └── firestore_initializer.dart
+│   ├── widgets/
+│   │   └── rounded_sheet_body.dart  # Feuille de contenu sous le header
 │   └── screens/
 │       ├── splash_screen.dart       # Écran de démarrage animé
-│       ├── home_screen.dart         # Navigation (BottomNavigationBar)
+│       ├── home_screen.dart         # Navigation (4 onglets)
 │       ├── calendar_screen.dart     # Calendrier des collectes
-│       ├── admin_screen.dart        # Gestion (grille des 12 mois)
-│       ├── month_editor_screen.dart # Éditeur de mois (sélection multiple)
+│       ├── drop_off_map_screen.dart # Carte des lieux de dépôt
+│       ├── admin_screen.dart        # Gestion (rappels + grille des mois)
+│       ├── month_editor_screen.dart # Éditeur de mois
+│       ├── infos_screen.dart        # Hub Guide / À propos / Mentions
 │       ├── guide_screen.dart        # Guide d'utilisation
-│       └── about_screen.dart        # À propos
+│       ├── about_screen.dart        # À propos
+│       └── legal_screen.dart        # Mentions légales
 ├── assets/
 │   └── icon/
 │       └── logo_notiwaste.png       # Logo de l'application

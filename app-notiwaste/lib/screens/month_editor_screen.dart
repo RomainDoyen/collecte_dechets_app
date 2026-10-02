@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/collection_type.dart';
 import '../services/collection_service.dart';
+import '../widgets/rounded_sheet_body.dart';
 
 class MonthEditorScreen extends StatefulWidget {
   final int year;
@@ -18,7 +19,6 @@ class MonthEditorScreen extends StatefulWidget {
 }
 
 class _MonthEditorScreenState extends State<MonthEditorScreen> {
-  CollectionType _selectedType = CollectionType.orduresMenageres;
   // Map: day number -> list of collection types for that day
   final Map<int, Set<CollectionType>> _selectedDays = {};
   // Existing events from Firestore (to know what to delete/add)
@@ -103,17 +103,107 @@ class _MonthEditorScreenState extends State<MonthEditorScreen> {
     return null;
   }
 
-  void _toggleDay(int day) {
+  Future<void> _editDay(int day) async {
+    final monthName = _monthNames[widget.month];
+    final draft = Set<CollectionType>.from(_selectedDays[day] ?? {});
+
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                20,
+                0,
+                20,
+                16 + MediaQuery.paddingOf(context).bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$day $monthName ${widget.year}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Cochez les collectes de ce jour.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 8),
+                  ...CollectionType.values.map((type) {
+                    final selected = draft.contains(type);
+                    final color = _getColorForType(type);
+                    return CheckboxListTile(
+                      value: selected,
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      activeColor: color,
+                      secondary: Icon(type.icon, color: color),
+                      title: Text(
+                        type.name,
+                        style: TextStyle(
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.normal,
+                          color: selected ? color : Colors.black87,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setSheetState(() {
+                          if (value == true) {
+                            draft.add(type);
+                          } else {
+                            draft.remove(type);
+                          }
+                        });
+                      },
+                    );
+                  }),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text('Annuler'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF2E7D32),
+                          ),
+                          child: const Text('Valider'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
     setState(() {
-      final types = _selectedDays.putIfAbsent(day, () => {});
-
-      if (types.contains(_selectedType)) {
-        types.remove(_selectedType);
-        if (types.isEmpty) _selectedDays.remove(day);
+      if (draft.isEmpty) {
+        _selectedDays.remove(day);
       } else {
-        types.add(_selectedType);
+        _selectedDays[day] = draft;
       }
-
       _hasChanges = !_areEqual(_selectedDays, _originalDays);
     });
   }
@@ -286,66 +376,15 @@ class _MonthEditorScreenState extends State<MonthEditorScreen> {
               ),
           ],
         ),
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  // Type selector
-                  _buildTypeSelector(),
-                  const Divider(height: 1),
-                  // Calendar grid
-                  Expanded(child: _buildCalendarGrid()),
-                  // Summary bar
-                  _buildSummaryBar(),
-                ],
-              ),
-      ),
-    );
-  }
-
-  Widget _buildTypeSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: CollectionType.values.map((type) {
-            final isSelected = _selectedType == type;
-            final color = _getColorForType(type);
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: FilterChip(
-                selected: isSelected,
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
+        body: RoundedSheetBody(
+          child: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
                   children: [
-                    Icon(
-                      type.icon,
-                      size: 18,
-                      color: isSelected ? Colors.white : color,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      type.name,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isSelected ? Colors.white : color,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
+                    Expanded(child: _buildCalendarGrid()),
+                    _buildSummaryBar(),
                   ],
                 ),
-                selectedColor: color,
-                backgroundColor: color.withOpacity(0.1),
-                checkmarkColor: Colors.white,
-                side: BorderSide(color: color, width: isSelected ? 2 : 1),
-                onSelected: (_) {
-                  setState(() => _selectedType = type);
-                },
-              ),
-            );
-          }).toList(),
         ),
       ),
     );
@@ -408,157 +447,26 @@ class _MonthEditorScreenState extends State<MonthEditorScreen> {
     );
   }
 
-  void _showDayDetail(int day) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final types = _selectedDays[day] ?? {};
-            final monthName = _monthNames[widget.month];
-
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).viewPadding.bottom + 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '$day $monthName ${widget.year}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  if (types.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        'Aucune collecte ce jour',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    )
-                  else
-                    ...types.toList().map((type) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getColorForType(type).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: _getColorForType(type)),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              type.icon,
-                              size: 22,
-                              color: _getColorForType(type),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                type.name,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: _getColorForType(type),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.red),
-                              tooltip: 'Supprimer',
-                              onPressed: () {
-                                setState(() {
-                                  final dayTypes = _selectedDays[day];
-                                  if (dayTypes != null) {
-                                    dayTypes.remove(type);
-                                    if (dayTypes.isEmpty) _selectedDays.remove(day);
-                                  }
-                                  _hasChanges = !_areEqual(_selectedDays, _originalDays);
-                                });
-                                setSheetState(() {});
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _toggleDay(day);
-                      },
-                      icon: const Icon(Icons.add),
-                      label: Text('Ajouter ${_selectedType.name}'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: _getColorForType(_selectedType),
-                        side: BorderSide(color: _getColorForType(_selectedType)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   Widget _buildDayCell(int day) {
     final types = _selectedDays[day] ?? {};
-    final hasCurrentType = types.contains(_selectedType);
+    final hasCollections = types.isNotEmpty;
     final today = DateTime.now();
     final isToday = today.year == widget.year &&
         today.month == widget.month &&
         today.day == day;
 
     return GestureDetector(
-      onTap: () => _toggleDay(day),
-      onLongPress: () => _showDayDetail(day),
+      onTap: () => _editDay(day),
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-          color: hasCurrentType
-              ? _getColorForType(_selectedType).withOpacity(0.2)
-              : Colors.transparent,
+          color: hasCollections ? Colors.grey[100] : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isToday
                 ? const Color(0xFF2E7D32)
-                : hasCurrentType
-                    ? _getColorForType(_selectedType)
+                : hasCollections
+                    ? Colors.grey[400]!
                     : Colors.grey[300]!,
             width: isToday ? 2 : 1,
           ),

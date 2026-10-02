@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/collection_type.dart';
+import '../widgets/rounded_sheet_body.dart';
 
 class GuideScreen extends StatelessWidget {
   const GuideScreen({super.key});
@@ -11,9 +12,21 @@ class GuideScreen extends StatelessWidget {
         title: const Text('Guide'),
         centerTitle: true,
       ),
-      body: ListView(
+      body: RoundedSheetBody(
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _buildSection(
+            icon: Icons.map_outlined,
+            title: 'Lieux de dépôt',
+            steps: [
+              'L\'onglet "Lieux" affiche les points d\'apport du CIREST (déchèteries, pharmacies, bornes textile, etc.).',
+              'Filtrez et recherchez les lieux avec le bouton en haut à droite de la carte.',
+              'Appuyez sur un marqueur pour voir l\'adresse, les horaires et les consignes.',
+              'Le bouton Itinéraire ouvre la navigation vers le lieu.',
+            ],
+          ),
+          const SizedBox(height: 16),
           _buildSection(
             icon: Icons.calendar_month,
             title: 'Calendrier',
@@ -31,9 +44,7 @@ class GuideScreen extends StatelessWidget {
             steps: [
               'Allez dans l\'onglet "Gestion" en bas de l\'écran.',
               'Sélectionnez l\'année avec les flèches, puis appuyez sur un mois.',
-              'Choisissez un type de collecte dans le bandeau en haut.',
-              'Appuyez sur les jours pour ajouter ou retirer une collecte.',
-              'Appui long sur un jour pour voir et supprimer individuellement ses collectes.',
+              'Appuyez sur un jour pour cocher ou décocher une ou plusieurs collectes.',
               'Appuyez sur "Enregistrer" pour sauvegarder vos modifications.',
             ],
           ),
@@ -52,6 +63,7 @@ class GuideScreen extends StatelessWidget {
           _buildLegend(),
           const SizedBox(height: 32),
         ],
+        ),
       ),
     );
   }

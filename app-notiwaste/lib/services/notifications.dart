@@ -6,7 +6,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
-import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'collection_service.dart';
 import 'reminder_settings.dart';
@@ -125,23 +124,6 @@ class Notifications {
         //   '🔔 Permissions - Notifications: ${notificationsEnabled ?? false}',
         // );
         // print('🔔 Permissions - Alarmes exactes: $exactAlarmsEnabled');
-
-        // Demander à désactiver les optimisations de batterie (important pour WorkManager)
-        // Note: Sur Xiaomi/Redmi, cela ouvre les paramètres pour que l'utilisateur désactive
-        // manuellement les optimisations (obligatoire pour la sécurité Android)
-        try {
-          // print(
-          //   '⚠️ Ouverture des paramètres pour désactiver les optimisations de batterie...',
-          // );
-          DisableBatteryOptimization.showDisableAllOptimizationsSettings(
-            'Notifications importantes',
-            'Pour recevoir les notifications de collecte même quand l\'app est fermée, veuillez désactiver les optimisations de batterie.',
-            'Optimisations de batterie détectées',
-            'Votre appareil limite les notifications en arrière-plan. Désactivez les optimisations pour cette application.',
-          );
-        } catch (e) {
-          // print('⚠️ Erreur ouverture paramètres optimisations batterie: $e');
-        }
       }
 
       // Android Alarm Manager Plus est déjà initialisé dans main.dart

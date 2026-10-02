@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'calendar_screen.dart';
+import 'drop_off_map_screen.dart';
 import 'admin_screen.dart';
-import 'guide_screen.dart';
-import 'about_screen.dart';
+import 'infos_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,14 +16,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = const [
     CalendarScreen(),
+    DropOffMapScreen(),
     AdminScreen(),
-    GuideScreen(),
-    AboutScreen(),
+    InfosScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _pages[_currentIndex],
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
@@ -33,24 +34,25 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Theme(
           data: Theme.of(context).copyWith(
             navigationBarTheme: NavigationBarThemeData(
+              height: 68,
               labelTextStyle: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
                   return const TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                   );
                 }
                 return TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 11,
                 );
               }),
               iconTheme: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
                   return const IconThemeData(color: Colors.white);
                 }
-                return IconThemeData(color: Colors.white.withOpacity(0.7));
+                return IconThemeData(color: Colors.white.withValues(alpha: 0.7));
               }),
             ),
           ),
@@ -70,19 +72,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'Calendrier',
               ),
               NavigationDestination(
+                icon: Icon(Icons.map_outlined),
+                selectedIcon: Icon(Icons.map),
+                label: 'Lieux',
+              ),
+              NavigationDestination(
                 icon: Icon(Icons.edit_calendar_outlined),
                 selectedIcon: Icon(Icons.edit_calendar),
                 label: 'Gestion',
               ),
               NavigationDestination(
-                icon: Icon(Icons.menu_book_outlined),
-                selectedIcon: Icon(Icons.menu_book),
-                label: 'Guide',
-              ),
-              NavigationDestination(
                 icon: Icon(Icons.info_outline),
                 selectedIcon: Icon(Icons.info),
-                label: 'A propos',
+                label: 'Infos',
               ),
             ],
           ),

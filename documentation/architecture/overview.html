@@ -38,7 +38,7 @@
         </nav>
         <div class="sidebar-footer">
           <span class="version-badge">v1.0</span>
-          <span>Mise à jour : 2026-02-27</span>
+          <span>Mise à jour : 2026-10-02</span>
         </div>
       </aside>
 
@@ -94,17 +94,17 @@
                   <tr>
                     <td><strong>Screens</strong></td>
                     <td><code>lib/screens/</code></td>
-                    <td>Interface utilisateur (7 écrans : splash, home, calendrier, admin, éditeur, guide, à propos)</td>
+                    <td>Interface utilisateur (splash, home, calendrier, lieux, gestion, éditeur, infos, guide, à propos, mentions légales)</td>
                   </tr>
                   <tr>
                     <td><strong>Services</strong></td>
                     <td><code>lib/services/</code></td>
-                    <td>Logique métier : données Firestore, notifications, FCM</td>
+                    <td>Logique métier : Firestore, notifications, FCM, API ADEME des lieux de dépôt</td>
                   </tr>
                   <tr>
                     <td><strong>Models</strong></td>
                     <td><code>lib/models/</code></td>
-                    <td>Modèles de données (CollectionEvent, CollectionType)</td>
+                    <td>Modèles de données (CollectionEvent, CollectionType, DropOffPoint)</td>
                   </tr>
                 </tbody>
               </table>
@@ -175,9 +175,9 @@
             <p>L'application utilise une <code>NavigationBar</code> (Material 3) avec 4 onglets :</p>
             <ul>
               <li><strong>Calendrier</strong> — Vue principale avec le calendrier des collectes</li>
-              <li><strong>Gestion</strong> — Éditeur de collectes par mois</li>
-              <li><strong>Guide</strong> — Mode d'emploi de l'application</li>
-              <li><strong>À propos</strong> — Informations sur l'application</li>
+              <li><strong>Lieux</strong> — Carte des points d'apport du CIREST (données ADEME)</li>
+              <li><strong>Gestion</strong> — Heure de rappel et éditeur de collectes par mois</li>
+              <li><strong>Infos</strong> — Guide, à propos et mentions légales</li>
             </ul>
           </div>
 
